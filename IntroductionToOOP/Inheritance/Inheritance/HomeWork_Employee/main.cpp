@@ -145,5 +145,5 @@ void main()
 	cout << "\n----------------------------------------------\n";
 	cout << "Зарплата отдела составляет: " << res << endl;
 
-
+	for (int i = 0; i < sizeof(department) / sizeof(Employee*); i++) delete department[i];
 }
