@@ -35,14 +35,16 @@ class Triangle: public GeometricFigure
         if (size_b == 0) this->size_b = 1;
         else this->size_b = size_b;
     }
-    void set_size_c(double size_c)
+    void set_size_c()
     {
-        if (size_c == 0) this->size_c = 1;
-        else this->size_c = size_c;
+        this->size_c = sqrt(size_a*size_a + size_b*size_b);
     }
     
-    Triangle(double size_a, double size_b) :size_a(size_a), size_b(size_b), size_c(sqrt(size_a*size_a + size_b*size_b)) 
+    Triangle(double size_a, double size_b) 
     {
+        set_size_a(size_a);
+        set_size_b(size_b);
+        set_size_c();
         cout << "TriangleConstructor:\t" << this << endl;
     }
     ~Triangle()
@@ -85,8 +87,9 @@ class Circle: public GeometricFigure
         else this->radius = radius;
     } 
 
-    Circle(double radius): radius(radius)
+    Circle(double radius)
     {
+        set_radius(radius);
         cout << "CircleConstructor:\t" << this << endl;
     }
     ~Circle()
@@ -172,12 +175,6 @@ class Square: public Rectangle
     public:
 
     double get_size() const { return size; }
-
-    void get_size(double size)
-    {
-        if (size == 0) this->size = 1;
-        else this->size = size;
-    }
 
     Square(double size):Rectangle(size, size)
     {
