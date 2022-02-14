@@ -1,3 +1,5 @@
+#pragma warning(disable:4326)
+
 #include<iostream>
 #include<cmath>
 
@@ -206,7 +208,7 @@ class Square: public Rectangle
 };
 
 
-int main()
+void main()
 {
 
     setlocale(LC_ALL, "");
@@ -230,5 +232,5 @@ int main()
     circle.draw();
     circle.info();
 
-    return 0;
+   // return 0;
 }
