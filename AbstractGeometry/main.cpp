@@ -1,6 +1,11 @@
 // для компилирования с mingw надо добавить ключ компиляции `-lgdi32`
 #define _CRT_SEQURE_NO_WARNINGS
 #define _USE_MATH_DIFINES
+// Библиотеки для OpenGL
+#include <GLFW/glfw3.h>
+#include "linmath.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include<iostream>
 #include<Windows.h>
 #include<cmath>
@@ -9,8 +14,30 @@ using namespace std;
 #define SHAPE_TAKE_PARAMETERS unsigned int start_x, unsigned int start_y, unsigned int line_width, Color color
 #define SHAPE_GIVE_PARAMETERS start_x, start_y, line_width, color 
 
+int figurePosition = 0;
+const float DEG2RAD = M_PI / 180;
+
+typedef struct RGB
+{
+    float r;
+    float g;
+    float b;
+};
+
+
 namespace Geometry
 {
+
+    struct RGB colorConverter(int hexValue)
+    {
+        struct RGB rgbColor;
+        rgbColor.b = ((hexValue >> 16) & 0xFF) / 255.0;
+        rgbColor.g = ((hexValue >> 8) & 0xFF) / 255.0;
+        rgbColor.r = ((hexValue) & 0xFF) / 255.0;
+
+        return rgbColor;
+    }
+
     enum Color
     {
         red = 0x000000FF,
@@ -63,6 +90,7 @@ namespace Geometry
         virtual double get_area() const = 0;
         virtual double get_perimeter() const = 0;
         virtual void draw() const = 0;
+        virtual void drawOpenGL() const = 0;
 
         void info() const
         {
@@ -115,6 +143,22 @@ namespace Geometry
             }
             SetConsoleTextAttribute(hConsole, Color::console_default);
         }
+
+        void drawOpenGL() const
+        {
+
+            glClear(GL_COLOR_BUFFER_BIT);
+            RGB rgbColor = Geometry::colorConverter(get_color());
+            glColor3f(rgbColor.r, rgbColor.g, rgbColor.b);
+
+            glBegin(GL_QUADS);
+            glVertex2f(start_x-side/2, start_y + side/2);
+            glVertex2f(start_x-side/2, start_y - side/2);
+            glVertex2f(start_x+side/2, start_y - side/2);
+            glVertex2f(start_x+side/2, start_y + side/2);
+            glEnd();
+        }
+
         void info() const
         {
             cout << typeid(*this).name() << endl;
@@ -171,6 +215,21 @@ namespace Geometry
             DeleteObject(hPen);
             ReleaseDC(hwnd, hdc);
         }
+        void drawOpenGL() const
+        {
+
+            glClear(GL_COLOR_BUFFER_BIT);
+            RGB rgbColor = Geometry::colorConverter(get_color());
+            glColor3f(rgbColor.r, rgbColor.g, rgbColor.b);
+
+            glBegin(GL_QUADS);
+            glVertex2f(start_x-length/2, start_y + width/2);
+            glVertex2f(start_x-length/2, start_y - width/2);
+            glVertex2f(start_x+length/2, start_y - width/2);
+            glVertex2f(start_x+length/2, start_y + width/2);
+            glEnd();
+        }
+
         void info()const
         {
             cout << typeid(*this).name() << endl;
@@ -225,6 +284,21 @@ namespace Geometry
             DeleteObject(hBrush);
 
             ReleaseDC(hwnd, hdc);
+        }
+        void drawOpenGL() const
+        {
+
+            glClear(GL_COLOR_BUFFER_BIT);
+            RGB rgbColor = Geometry::colorConverter(get_color());
+            glColor3f(rgbColor.r, rgbColor.g, rgbColor.b);
+
+            glBegin(GL_POLYGON);
+            for(int i = 0; i<360; i++)
+            {
+                float degInRad = i * DEG2RAD;
+                glVertex2f(cos(degInRad)*radius, sin(degInRad)*radius);
+            }
+            glEnd();
         }
         void info() const
         {
@@ -358,30 +432,81 @@ namespace Geometry
    };
 }
 
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+    if (action != GLFW_PRESS)
+        return;
+
+    if (key == GLFW_KEY_ESCAPE && mods == 0)
+        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    if (key == GLFW_KEY_SPACE && mods == 0) 
+        if (figurePosition == 2) figurePosition = 0;
+        else figurePosition++; 
+}
+
 int main()
 {
     setlocale(LC_ALL,"");
 
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    COORD console_rect{120,32};
-    SetConsoleDisplayMode(hConsole, CONSOLE_FULLSCREEN_MODE, &console_rect);
+    if(!glfwInit())
+    {
+        cout << "Не получилось инициализировать GLFW" << endl;
+        exit(EXIT_FAILURE);
+    }
 
-
-    Geometry::Square square(15, 100, 100, 5, Geometry::Color::console_red);
-    square.info();
-
-    Geometry::Rectangle rect(150, 80, 500, 100, 5,Geometry::Color::blue); 
-    rect.info(); 
     
-    Geometry::Circle circle(150, 500, 250, 5, Geometry::Color::yellow); 
-    circle.info();
 
-    Geometry::EquilateralTriangle eqt(380, 900, 220, 15, Geometry::Color::green);
-    eqt.info();
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    GLFWwindow* window = glfwCreateWindow(600, 600, "Abstract geometry", NULL, NULL);
 
-    Geometry::IsoscalesTriangle isct(80, 80, 100, 400, 20, Geometry::Color::yellow);
-    isct.info();
+    if (!window)
+    {
+        glfwTerminate();
+        cout << "Не удалось инициализировать окно GLFW" << endl;
+        exit(EXIT_FAILURE);
+    }
+  
+    glfwSetKeyCallback(window, key_callback); 
+    glfwMakeContextCurrent(window);
+    glfwSwapInterval(1);
 
-    system("PAUSE");
-    return 0;
+    Geometry::Shape* figures[] =
+    {
+        new Geometry::Square(0.4, 0, 0, 1, Geometry::Color::red),
+        new Geometry::Rectangle(0.5, 0.2, 0.1, 0.1, 1, Geometry::Color::blue),
+        new Geometry::Circle(0.2, 0, 0, 1, Geometry::Color::yellow)
+    };
+
+    const char *winTitle[] = 
+    {
+        "Square",
+        "Rectangle",
+        "Circle"
+    };
+
+    while(!glfwWindowShouldClose(window))
+    {
+        int width, height;
+
+        glfwGetFramebufferSize(window, &width, &height);
+        glViewport(0, 0, width, height);
+        figures[figurePosition]->drawOpenGL();
+
+        glfwSetWindowTitle(window, winTitle[figurePosition]);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    for (int i = 0; i < sizeof(figures)/sizeof(Geometry::Shape); i++)
+    {
+        delete figures[i];
+    }
+    delete[] figures;
+
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    exit(EXIT_SUCCESS);
+
 }
