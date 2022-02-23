@@ -33,9 +33,40 @@ public:
 		Head = nullptr;
 		cout << "LConstructor:\t" << this << endl;
 	}
+	ForwarsList(const ForwarsList& other): ForwarsList()
+	{
+		Element* Temp = other.Head;
+		while (Temp)
+		{
+			push_back(Temp->Data);
+			Temp = Temp->pNext;
+		}
+	}
 	~ForwarsList()
 	{
+		while (Head)
+		{
+			pop_front();
+		}
 		cout << "LDestructor:\t" << this << endl;
+	}
+	//			Operators
+	ForwarsList& operator=(const ForwarsList& other)
+	{
+		if (this == &other) return *this;
+
+		while (Head)
+		{
+			pop_front();
+		}
+
+		Element* Temp = other.Head;
+		while (Temp)
+		{
+			push_back(Temp->Data);
+			Temp = Temp->pNext;
+		}
+		return *this;
 	}
 
 	//			Adding elements
@@ -47,13 +78,6 @@ public:
 	}
 	void push_back(int Data)
 	{
-		//Element* Temp = Head;
-		//while (Temp->pNext)
-		//{
-		//	Temp = Temp->pNext;
-		//}
-		//Element* New = new Element(Data);
-		//Temp->pNext = New;
 		if (Head == nullptr) return push_front(Data);
 		Element* Temp = Head;
 		while (Temp->pNext) Temp = Temp->pNext;
@@ -72,6 +96,17 @@ public:
 		Element* New = new Element(Data);
 		New->pNext = Temp->pNext;
 		Temp->pNext = New;
+	}
+
+	void erase(int index)
+	{
+
+		Element* Temp = Head;
+		for (int i = 0; i < index - 1; i++) Temp = Temp->pNext;
+		Element* Erased = Temp->pNext;
+		Temp->pNext = Temp->pNext->pNext;
+
+		delete Erased;
 	}
 
 	//		Removing elements
@@ -119,19 +154,25 @@ void main()
 	}
 	list.print();
 
-	list.pop_front();
-	list.print();
-
-	int index;
-	int value;
-	cout << "Введите индекс добавляемого элемента: "; cin >> index;
-	cout << "Введите значение добавляемого элемента: "; cin >> value;
-	list.insert(index, value);
-
-	list.print();
-	//list.pop_back();
+	//list.pop_front();
 	//list.print();
 
-	//list.push_back(250);
+	//int index;
+	//int value;
+	//cout << "Введите индекс добавляемого элемента: "; cin >> index;
+	//cout << "Введите значение добавляемого элемента: "; cin >> value;
+	//list.insert(index, value);
+
 	//list.print();
+
+	list.erase(2);
+	list.print();
+
+	ForwarsList list2 = list;
+	list2.print();
+
+	ForwarsList list3;
+	list3 = list;
+	list3.print();
+
 }
