@@ -1,6 +1,8 @@
-//ForwarsList
+//ForwardList
 #include<iostream>
 using namespace std;
+
+class ForwardList;
 
 class Element
 {
@@ -19,9 +21,9 @@ public:
 		cout << "EDestructor:\t" << this << endl;
 	}
 
-	friend class ForwarsList;
+	friend class ForwardList;
     friend class Iterator;
-    friend ForwardList operator+(const ForwarsList& left, const ForwarsList& right);
+    friend ForwardList operator+(const ForwardList& left, const ForwardList& right);
 };
 
 unsigned int Element::count = 0;
@@ -32,11 +34,11 @@ class Iterator
     public:
     Iterator(Element* Temp):Temp(Temp)
     {
-        cout << "ItConstructor:\t" << this << endl;
+       // cout << "ItConstructor:\t" << this << endl;
     }
     ~Iterator()
     {
-        cout << "ItDestructor:\t" << this << endl;
+        //cout << "ItDestructor:\t" << this << endl;
     }
     Iterator& operator++()
     {
@@ -51,6 +53,10 @@ class Iterator
     }
     bool operator==(const Iterator& other) const
     {
+        return this->Temp == other.Temp;
+    }
+    bool operator!=(const Iterator& other) const
+    {
         return this->Temp != other.Temp;
     }
 
@@ -64,29 +70,31 @@ class Iterator
     }
 };
 
-class ForwarsList
+class ForwardList
 {
 	Element* Head;
     unsigned int size;
 public:
     Element* getHead() const { return Head; }
     unsigned int get_size() const { return size; }
-	ForwarsList()
+    Iterator begin() { return Head; }
+    Iterator end() { return nullptr; }
+	ForwardList()
 	{
 		Head = nullptr;
         size = 0;
 		cout << "LConstructor:\t" << this << endl;
 	}
-    ForwaedList(const initializer_list<int>& il):ForwarsList()
+    ForwardList(const initializer_list<int>& il):ForwardList()
     {
-        cout << typeid(il.begin()).name() << endl;
+        //cout << typeid(il.begin()).name() << endl;
 
         for (int const* it = il.begin(); it != il.end(); it++)
         {
             push_back(*it);
         }
     }
-	ForwarsList(const ForwarsList& other): ForwarsList()
+	ForwardList(const ForwardList& other): ForwardList()
 	{
 	//	Element* Temp = other.Head;
 	//	while (Temp)
@@ -98,12 +106,12 @@ public:
         *this = other;
         cout << "CopyConstructor:\t" << endl;
 	}
-    ForwardList(ForwarsList&& other)
+    ForwardList(ForwardList&& other)
     {
         *this = std::move(other);
-        cout << "MoveConstructor:\t" << endl;
+        cout << "MoveConstructor:\t" << this << endl;
     }
-	~ForwarsList()
+	~ForwardList()
 	{
 		while (Head)
 		{
@@ -112,7 +120,7 @@ public:
 		cout << "LDestructor:\t" << this << endl;
 	}
 	//			Operators
-	ForwarsList& operator=(const ForwarsList& other)
+	ForwardList& operator=(const ForwardList& other)
 	{
 		if (this == &other) return *this;
 
@@ -136,15 +144,16 @@ public:
 	//	}
 	//	return *this;
 	}
-    ForwarsList& operator=(ForwardList&& other)
+    ForwardList& operator=(ForwardList&& other)
     {
-        it (this == &other) return *this;
+        if (this == &other) return *this;
         while (Head) pop_front();
         this->Head = other.Head;
         this->size = other.size;
         other.Head = nullptr;
         other.size = 0;
         cout << "MoveAssignment:\t" << this << endl;
+        return *this;
     }
 
     const int& operator[](unsigned int index)const
@@ -153,7 +162,7 @@ public:
         for (int i = 0; i < index; i++) Temp = Temp->pNext;
         return Temp->Data;
     }
-    int&& operator[](unsigned int index)
+    int& operator[](unsigned int index)
     {
         Element* Temp = Head;
         for (int i = 0; i< index; i++) Temp = Temp->pNext;
@@ -219,6 +228,7 @@ public:
 		Element* Erased = Head;
 		Head = Head->pNext;
 		delete Erased;
+        size--;
 	}
 
 	void pop_back()
@@ -227,6 +237,7 @@ public:
 		while (Temp->pNext->pNext) Temp = Temp->pNext;
 		delete Temp->pNext;
 		Temp->pNext = nullptr;
+        size--;
 	}
 
 	//			Methods
@@ -239,12 +250,61 @@ public:
 		//	Temp = Temp->pNext;
 		//}
 		//cout << "Количество элементов списка: " << Head->count << endl;
-        for (Element* Temp = Head; Temp; Temp++)
-                cout << Temp << "\t" << Temp->Data << "\t" << Temp->pNext << endl;
-
-        cout << "Количество элементов списка: " << size << endl;
-        cout << "Общее количество элементов : " << Head->count << endl;
+//        for (Element* Temp = Head; Temp; Temp++)
+//                cout << Temp << "\t" << Temp->Data << "\t" << Temp->pNext << endl;
+//
+//        cout << "Количество элементов списка: " << size << endl;
+//        cout << "Общее количество элементов : " << Head->count << endl;
+        for (Iterator it = Head; it != nullptr; it++)
+            cout << *it << "\t";
+        cout << endl;
 	}
+    void unique()
+    {
+        // перебрать элементы массива и удалить не уникальные. 
+        sort();
+        for (Element* Temp = Head; Temp; Temp = Temp->pNext)
+        {
+            Element* Check = Temp->pNext;
+            if (Temp->Data == Check->Data)
+            {
+                Temp->pNext = Temp->pNext->pNext;
+                delete Check;
+            }
+        }
+    }
+    void sort()
+    {
+        for (Element* Temp = Head; Temp; Temp = Temp->pNext)
+        {
+            for (Element* Temp2 = Head; Temp2 != Temp->pNext; Temp2 = Temp2 -> pNext)
+            {
+                if (Temp2->pNext == nullptr) break;
+                Element* Next = Temp2->pNext;
+                if (Temp2->Data > Next->Data)
+                {
+                    int t = Temp2->Data;
+                    Temp2->Data = Next->Data;
+                    Next->Data = t;
+                }
+            }
+        }
+    }
+
+    void reverse()
+    {
+        // создать временный список
+        ForwardList temp;
+        // скопировать элементы в обратном порядку
+        for (Element* Temp = Head; Temp; Temp = Temp->pNext)
+            temp.push_front(Temp->Data);
+
+        // удалить текущий лист
+        while (Head) pop_front();
+
+        // перенести из временного списка в текущий
+        *this = temp;
+    }
 };
 
 ForwardList operator+(const ForwardList& left, const ForwardList& right)
@@ -264,7 +324,7 @@ void main()
 	int n;
 	cout << "Введите размер списка: "; cin >> n;
 
-	ForwarsList list;
+	ForwardList list;
 
 	for (int i = 0; i < n; i++)
 	{
@@ -287,16 +347,37 @@ void main()
 	list.erase(2);
 	list.print();
 
-	ForwarsList list2 = list;
+	ForwardList list2 = list;
 	list2.print();
 
-	ForwarsList list3;
+	ForwardList list3;
 	list3 = list;
 	list3.print();
 #endif
     ForwardList list = { 3, 5, 8, 13, 21 };
-    for (Iterator it = list.getHead(); it!=nullptr; ++it)
-        cout << *it << "\t";
+//    for (Iterator it = list.getHead(); it!=nullptr; ++it)
+//        cout << *it << "\t";
+//    cout << endl;
+    list.print();
+
+
+    list.reverse();
+    list.print();
+    //ForwardList list2 = { 5, 8, 1 };
+    //list2.print();
+
+    //list2.sort();
+    //list2.print();
+
+    ForwardList list3 = { 5, 5, 1, 3, 8, 9, 9 };
+    list3.print();
+    list3.unique();
+    list3.print();
+
+    for (int i:list3)
+    {
+        cout << i << "\t";
+    }
     cout << endl;
 
 }
