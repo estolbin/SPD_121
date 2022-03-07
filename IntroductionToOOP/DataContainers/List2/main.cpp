@@ -1,4 +1,4 @@
-#include<iostream>
+ï»¿#include<iostream>
 using namespace std;
 
 #define tab "\t"
@@ -295,13 +295,13 @@ void main()
 
 	int index;
 	int value;
-	cout << "Ââåäèòå èíäåêñ: "; cin >> index;
-	cout << "Çíà÷åíèå äîáàâëÿåìîãî ıëåìåíòà: "; cin >> value;
+	cout << "Ğ’Ğ²ĞµĞ´Ğ¸Ñ‚Ğµ Ğ¸Ğ½Ğ´ĞµĞºÑ: "; cin >> index;
+	cout << "Ğ—Ğ½Ğ°Ñ‡ĞµĞ½Ğ¸Ğµ Ğ´Ğ¾Ğ±Ğ°Ğ²Ğ»ÑĞµĞ¼Ğ¾Ğ³Ğ¾ ÑĞ»ĞµĞ¼ĞµĞ½Ñ‚Ğ°: "; cin >> value;
 	list.insert(index, value);
 	list.print();
 	list.reverse_print();
 
-	cout << "Ââåäèòå èíäåêñ óäàëÿåìîãî ıëåìåíòà: "; cin >> index;
+	cout << "Ğ’Ğ²ĞµĞ´Ğ¸Ñ‚Ğµ Ğ¸Ğ½Ğ´ĞµĞºÑ ÑƒĞ´Ğ°Ğ»ÑĞµĞ¼Ğ¾Ğ³Ğ¾ ÑĞ»ĞµĞ¼ĞµĞ½Ñ‚Ğ°: "; cin >> index;
 	list.erase(index);
 
 	list.print();
