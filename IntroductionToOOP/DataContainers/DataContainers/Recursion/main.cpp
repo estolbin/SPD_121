@@ -1,16 +1,16 @@
-#include<iostream>
+ï»¿#include<iostream>
 using namespace std;
 
 void elevator(int floor)
 {
 	if (floor == 0)
 	{
-		cout << "Âû â ïîäâàëå" << endl;
+		cout << "Ð’Ñ‹ Ð² Ð¿Ð¾Ð´Ð²Ð°Ð»Ðµ" << endl;
 		return;
 	}
-	cout << "Âû íà " << floor << " ýòàæå " << endl;
+	cout << "Ð’Ñ‹ Ð½Ð° " << floor << " ÑÑ‚Ð°Ð¶Ðµ " << endl;
 	elevator(floor - 1);
-	cout << "Âû íà " << floor << " ýòàæå " << endl;
+	cout << "Ð’Ñ‹ Ð½Ð° " << floor << " ÑÑ‚Ð°Ð¶Ðµ " << endl;
 }
 
 int factorial(int n)
@@ -34,23 +34,23 @@ void main()
 
 #ifdef ELEVATOR_CHECK
 	int floor;
-	cout << "Ââåäèòå íîìåð ýòàæà: "; cin >> floor;
+	cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ð¾Ð¼ÐµÑ€ ÑÑ‚Ð°Ð¶Ð°: "; cin >> floor;
 	elevator(floor);
 #endif // ELEVATOR_CHECK
 
 
 #ifdef HOME_WORK
 	int num;
-	cout << "Ââåäèòå ÷èñëî, äëÿ ôàêòîðèàëà: "; cin >> num;
-	cout << "Ôàêòîðèàë ÷èñëà ðàâåí: " << factorial(num) << "." << endl;
+	cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ñ‡Ð¸ÑÐ»Ð¾, Ð´Ð»Ñ Ñ„Ð°ÐºÑ‚Ð¾Ñ€Ð¸Ð°Ð»Ð°: "; cin >> num;
+	cout << "Ð¤Ð°ÐºÑ‚Ð¾Ñ€Ð¸Ð°Ð» Ñ‡Ð¸ÑÐ»Ð° Ñ€Ð°Ð²ÐµÐ½: " << factorial(num) << "." << endl;
 
 	double a;
 	int n_pow;
 
-	cout << "×èñëî: "; cin >> a;
-	cout << "Ñòåïåíü: "; cin >> n_pow;
+	cout << "Ð§Ð¸ÑÐ»Ð¾: "; cin >> a;
+	cout << "Ð¡Ñ‚ÐµÐ¿ÐµÐ½ÑŒ: "; cin >> n_pow;
 
-	cout << "×èñëî " << a << " â ñòåïåíè " << n_pow << " ðàâíî " << power(a, n_pow) << endl;
+	cout << "Ð§Ð¸ÑÐ»Ð¾ " << a << " Ð² ÑÑ‚ÐµÐ¿ÐµÐ½Ð¸ " << n_pow << " Ñ€Ð°Ð²Ð½Ð¾ " << power(a, n_pow) << endl;
 #endif // HOME_WORK
 
 
