@@ -13,16 +13,21 @@ void elevator(int floor)
 	cout << "Вы на " << floor << " этаже " << endl;
 }
 
-int factorial(int n)
+//int factorial(int n)
+long long int factorial(int n)
 {
-	if (n == 1) return 1;
-	return n * factorial(n - 1);
+	//if (n == 1) return 1;
+	//return n * factorial(n - 1);
+	return n == 1 ? 1 : n * factorial(n - 1);
 }
 
 double power(double a, int n)
 {
-	if (n == 0) return 1;
-	return a * power(a, n - 1);
+	//if (n == 0) return 1;
+	////else if (n < 0) return 1 / a * power(a, n + 1);
+	//else if (n < 0) return power(1 / a, -n);
+	//else return a * power(a, n - 1);
+	return n == 0 ? 1 : n > 0 ? a * power(a, n - 1) : power(1 / a, -n);
 }
 
 //#define ELEVATOR_CHECK
